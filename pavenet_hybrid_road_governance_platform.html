@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PaveNet - Hybrid Road Governance & Hyper-Local Infrastructure Platform</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Phosphor Icons for UI Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <!-- Chart.js for ERP Fiscal & Environmental Telemetry -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            },
+            emerald: {
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    .pulse-dot {
+      animation: pulseAnimation 2s infinite;
+    }
+    @keyframes pulseAnimation {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased flex flex-col min-h-screen">
+
+  <header class="sticky top-0 z-50 bg-slate-900 border-b border-slate-800 text-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Logo & Paradigm Badge -->
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-brand-500/30">
+            <i class="ph-bold ph-shield-check text-2xl"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-lg tracking-tight">PaveNet</span>
+              <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                Hybrid e-Gov SPBE
+              </span>
+            </div>
+            <p class="text-xs text-slate-400 hidden sm:block">ERP Fiscal Ring-Fencing & 60-House Devolved Governance</p>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="flex items-center gap-1.5 sm:gap-2">
+          <button id="nav-citizen" onclick="navigateTo('citizen')" class="nav-tab px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 transition bg-brand-600 text-white shadow-sm">
+            <i class="ph-bold ph-user text-base"></i>
+            <span class="hidden md:inline">Citizen & Reporting</span>
+            <span class="md:hidden">Citizen</span>
+          </button>
+          <button id="nav-cluster" onclick="navigateTo('cluster')" class="nav-tab px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-slate-300 hover:text-white hover:bg-slate-800">
+            <i class="ph-bold ph-users-three text-base"></i>
+            <span class="hidden md:inline">60-House Cluster</span>
+            <span class="md:hidden">Cluster</span>
+            <span id="badge-cluster-count" class="h-4 w-4 rounded-full bg-amber-500 text-[10px] font-bold flex items-center justify-center text-slate-900">1</span>
+          </button>
+          <button id="nav-admin" onclick="navigateTo('admin')" class="nav-tab px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 transition text-slate-300 hover:text-white hover:bg-slate-800">
+            <i class="ph-bold ph-gauge text-base"></i>
+            <span class="hidden md:inline">Command Center (PUPR/DoT)</span>
+            <span class="md:hidden">PUPR/DoT</span>
+          </button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- ========================================== -->
+    <!-- VIEW 1: CITIZEN REPORTING & AUTO-TRIAGE   -->
+    <!-- ========================================== -->
+    <section id="view-citizen" class="space-y-6">
+      <!-- Cluster Status Ribbon -->
+      <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-2xl p-5 shadow-sm border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+          <div class="h-12 w-12 rounded-xl bg-white/10 backdrop-blur border border-white/20 flex items-center justify-center text-emerald-400 shrink-0">
+            <i class="ph-bold ph-map-pin text-2xl"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="font-bold text-base sm:text-lg">Detected Zone: Kenanga Block Cluster RT 03</h2>
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                <span class="h-2 w-2 rounded-full bg-emerald-400 pulse-dot"></span> 60 Households Active
+              </span>
+            </div>
+            <p class="text-xs text-slate-300 mt-0.5">Autonomous Residential Road Jurisdiction • Automated ERP Externality Subsidies</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-6 border-t md:border-t-0 md:border-l border-white/10 pt-3 md:pt-0 md:pl-6">
+          <div>
+            <span class="text-xs text-slate-400 block font-medium">Cluster Micro-Treasury Balance</span>
+            <span id="card-citizen-cluster-balance" class="text-xl sm:text-2xl font-extrabold text-emerald-400 font-mono">Rp 14,250,000</span>
+          </div>
+          <button onclick="navigateTo('cluster')" class="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition border border-white/20 flex items-center gap-1.5">
+            <span>Open Cluster Assembly</span>
+            <i class="ph-bold ph-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Hazard Form -->
+        <div class="lg:col-span-7 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-5">
+          <div class="border-b border-slate-100 pb-4">
+            <h3 class="font-bold text-slate-900 text-lg flex items-center justify-between">
+              <span>Road Damage Incident Reporting</span>
+              <span class="text-xs font-normal text-slate-500 flex items-center gap-1">
+                <i class="ph-bold ph-clock"></i> SLA Triage: &lt; 2 Minutes
+              </span>
+            </h3>
+            <p class="text-xs text-slate-500 mt-1">The platform implements real-time geospatial triage to route maintenance jurisdiction and funding streams automatically.</p>
+          </div>
+
+          <!-- Interactive Geolocation Selector -->
+          <div class="space-y-2">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+              1. Select / Detect Road Hazard Coordinates
+            </label>
+            <div class="relative">
+              <select id="input-road-segment" onchange="handleRoadSegmentChange()" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:bg-white transition outline-none">
+                <option value="residential">📍 Jl. Kenanga RT 03 / No. 14 (Residential Street - 60-House Cluster)</option>
+                <option value="arterial">📍 Jl. Gatot Subroto KM 4.2 (Primary Arterial / Primary ERP Corridor)</option>
+                <option value="residential-gang">📍 East Kenanga Lane No. 8 (Residential Street - 60-House Cluster)</option>
+              </select>
+              <i class="ph-bold ph-navigation-arrow absolute left-3.5 top-3.5 text-brand-600 text-base"></i>
+            </div>
+            
+            <!-- Real-time Triage Explainer Box -->
+            <div id="triage-prediction-banner" class="p-3.5 rounded-xl border transition-all text-xs flex items-start gap-3 bg-emerald-50 border-emerald-200 text-emerald-900">
+              <i class="ph-fill ph-check-circle text-emerald-600 text-lg shrink-0 mt-0.5"></i>
+              <div>
+                <span class="font-bold block">Automated Triage: 60-House Cluster Jurisdiction</span>
+                <span class="text-emerald-800">Report routed directly to the neighborhood digital quorum dashboard. Funded by the <strong>Devolved ERP Micro-Treasury</strong> without municipal bureaucratic bottlenecks.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Severity & Landmark -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                2. Severity Level
+              </label>
+              <select id="input-severity" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-brand-500 outline-none">
+                <option value="Moderate">Moderate (4-7 cm pothole, hazard to 2-wheelers)</option>
+                <option value="Critical">Critical (Amblas &gt; 8 cm / Collapsed Drainage)</option>
+                <option value="Minor">Minor (Alligator cracking & superficial wear)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                3. Physical Landmark Reference
+              </label>
+              <input id="input-landmark" type="text" placeholder="e.g., In front of RT 03 Guard Post" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-brand-500 outline-none">
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              4. Damage Specification & Hazard Context
+            </label>
+            <textarea id="input-description" rows="2" placeholder="Detail pothole dimensions, surface layer peeling, or ponding hazards..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 outline-none"></textarea>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+              <span>5. Photographic Proof & Digital Watermark (Geotag Lock)</span>
+              <span id="photo-status-badge" class="text-[10px] text-amber-600 font-bold bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                Photo Required
+              </span>
+            </label>
+
+            <!-- Hidden File / Camera Input -->
+            <input 
+              type="file" 
+              id="input-photo-file" 
+              accept="image/*" 
+              capture="environment" 
+              class="hidden" 
+              onchange="handlePhotoUpload(event)"
+            />
+
+            <!-- Interactive Dropzone / Trigger Area -->
+            <div 
+              id="photo-dropzone" 
+              onclick="triggerPhotoInput()" 
+              ondragover="handlePhotoDragOver(event)" 
+              ondragleave="handlePhotoDragLeave(event)" 
+              ondrop="handlePhotoDrop(event)"
+              class="border-2 border-dashed border-brand-300 bg-brand-50/30 hover:bg-brand-50/60 rounded-xl p-4 text-center cursor-pointer transition relative group"
+            >
+              <!-- State 1: Empty / Prompt to Upload -->
+              <div id="photo-placeholder-ui" class="flex flex-col items-center justify-center gap-1.5 py-1">
+                <div class="h-11 w-11 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center shadow-sm group-hover:scale-105 transition">
+                  <i class="ph-bold ph-camera text-2xl"></i>
+                </div>
+                <span class="text-xs font-bold text-slate-800">
+                  Tap to Launch Camera or Upload Evidence Photo
+                </span>
+                <span class="text-[11px] text-slate-500">
+                  Drag & drop image here or browse • JPEG, PNG, WEBP
+                </span>
+                <div class="mt-1 flex items-center gap-2">
+                  <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
+                    <i class="ph-bold ph-lock-key"></i> GPS -6.2293, 106.8167 Locked
+                  </span>
+                  <button 
+                    type="button" 
+                    onclick="loadDemoPresetPhoto(event)" 
+                    class="text-[10px] font-bold text-brand-700 bg-brand-100 hover:bg-brand-200 px-2 py-0.5 rounded transition"
+                    title="Quick demo option without browsing files"
+                  >
+                    ⚡ Use Demo Pothole Photo
+                  </button>
+                </div>
+              </div>
+
+              <!-- State 2: Preview with Geotag Overlay -->
+              <div id="photo-preview-ui" class="hidden relative max-w-sm mx-auto overflow-hidden rounded-lg shadow-sm border border-slate-300">
+                <img id="photo-preview-img" src="" alt="Damage Preview" class="w-full h-44 object-cover" />
+                
+                <!-- Digital Watermark Overlay -->
+                <div class="absolute bottom-0 inset-x-0 bg-slate-950/85 backdrop-blur-sm text-emerald-400 p-2 font-mono text-[10px] text-left leading-tight border-t border-slate-700">
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold flex items-center gap-1">
+                      <i class="ph-fill ph-shield-check text-emerald-400"></i> SPBE VERIFIED GEOTAG
+                    </span>
+                    <span id="preview-timestamp" class="text-slate-300"></span>
+                  </div>
+                  <div class="text-slate-200 mt-0.5">
+                    COORD: -6.229352, 106.816741 • ALT: 14.2m MSL
+                  </div>
+                  <div class="text-[9px] text-slate-400">
+                    DEVICE: SENSOR-HW-UID #PVN-8842 • INTEGRITY: SHA-256 OK
+                  </div>
+                </div>
+
+                <!-- Reset / Retake Button -->
+                <button 
+                  type="button" 
+                  onclick="resetUploadedPhoto(event)" 
+                  class="absolute top-2 right-2 bg-slate-900/80 hover:bg-slate-900 text-white rounded-md px-2 py-1 text-[11px] font-bold flex items-center gap-1 shadow-md transition"
+                >
+                  <i class="ph-bold ph-arrows-clockwise"></i> Retake
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button onclick="submitReportForm()" class="w-full py-3.5 px-4 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-md shadow-brand-500/20 transition flex items-center justify-center gap-2">
+            <i class="ph-bold ph-paper-plane-right text-lg"></i>
+            <span>Submit Official PaveNet Report</span>
+          </button>
+        </div>
+
+        <!-- Live Status Tracker & Recent Tickets -->
+        <div class="lg:col-span-5 space-y-4">
+          <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm">
+            <h3 class="font-bold text-slate-900 text-sm flex items-center justify-between pb-3 border-b border-slate-100">
+              <span>Track Public Road Hazard Ticket</span>
+              <span class="text-[11px] font-semibold text-brand-600">Transparent Audit</span>
+            </h3>
+            <div class="mt-3 flex gap-2">
+              <input id="input-search-ticket" type="text" placeholder="Enter Ticket ID (e.g., #PW-2026-101)" class="flex-1 px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-brand-500">
+              <button onclick="searchTicketAction()" class="px-3 py-2 bg-slate-900 text-white rounded-lg text-xs font-semibold hover:bg-slate-800 transition">
+                Search
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm space-y-3">
+            <div class="flex items-center justify-between">
+              <h4 class="font-bold text-xs uppercase tracking-wider text-slate-500">Recent Tickets in Your Area</h4>
+              <span class="text-xs font-semibold text-brand-600">Dynamic Sync</span>
+            </div>
+            <div id="citizen-tickets-feed" class="space-y-3 max-h-[460px] overflow-y-auto custom-scrollbar pr-1">
+              <!-- Dynamically Populated -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- VIEW 2: HYPER-LOCAL GOVERNANCE (60-HOUSE CLUSTER DASHBOARD)  -->
+    <!-- ============================================================ -->
+    <section id="view-cluster" class="space-y-6 hidden">
+      <!-- Header Explainer -->
+      <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-xl font-bold text-slate-900">Self-Governing Community Assembly: 60-House Cluster</h2>
+              <span class="text-xs font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
+                Decentralized Autonomy
+              </span>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-600 mt-1 max-w-2xl">
+              Community governance paradigm: Residential street maintenance bypasses centralized municipal bureaucracy. Funds are ring-fenced from municipal ERP congestion and pollution levies, managed and authorized via digital voting across 60 member households.
+            </p>
+          </div>
+          <!-- Quorum Rule Badge -->
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 shrink-0 flex items-center gap-3">
+            <div class="h-10 w-10 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-lg">
+              51%
+            </div>
+            <div class="text-xs">
+              <span class="font-bold text-slate-800 block">Quorum Threshold</span>
+              <span class="text-slate-500">Min. 31 of 60 Households Required</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cluster Financial & Work-Order Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Total Cluster Micro-Treasury</span>
+          <p id="stat-cluster-balance" class="text-2xl font-black text-emerald-600 font-mono mt-1">Rp 14,250,000</p>
+          <div class="mt-2 text-[11px] text-slate-500 flex items-center gap-1.5">
+            <i class="ph-bold ph-arrow-circle-down text-emerald-600"></i>
+            <span>Allocated from Q4 DoT ERP Surcharges</span>
+          </div>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Works Under Deliberation</span>
+          <p id="stat-cluster-pending" class="text-2xl font-black text-amber-500 font-mono mt-1">1 Ticket</p>
+          <div class="mt-2 text-[11px] text-slate-500 flex items-center gap-1.5">
+            <i class="ph-bold ph-hourglass-high text-amber-500"></i>
+            <span>Awaiting citizen quorum approval threshold</span>
+          </div>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Completed & Validated Works</span>
+          <p id="stat-cluster-completed" class="text-2xl font-black text-slate-800 font-mono mt-1">4 Sites</p>
+          <div class="mt-2 text-[11px] text-slate-500 flex items-center gap-1.5">
+            <i class="ph-bold ph-check-circle text-emerald-600"></i>
+            <span>Funds automatically disbursed to verified local vendor</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actionable Cluster Cards (Voting & Completion Audit) -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="font-bold text-slate-900 text-base">Neighborhood Road Repair Proposals & Execution</h3>
+          <span class="text-xs text-slate-500">Active Participation: Open to all verified cluster residents</span>
+        </div>
+        
+        <div id="cluster-cards-container" class="space-y-5">
+          <!-- Dynamically Injected -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- VIEW 3: COMMAND CENTER & ERP FISCAL SIMULATION (PUPR/DISHUB)   -->
+    <!-- ============================================================== -->
+    <section id="view-admin" class="space-y-6 hidden">
+      <!-- Command Center Metrics -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">ERP Toll & Externality Revenue</span>
+          <p id="metric-erp-revenue" class="text-2xl font-black text-brand-700 font-mono mt-1">Rp 482,500,000</p>
+          <span class="text-[11px] text-brand-600 font-semibold block mt-1">Levied from Arterial Wear & Emissions</span>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Devolved to Cluster Treasuries</span>
+          <p id="metric-devolved-fund" class="text-2xl font-black text-emerald-600 font-mono mt-1">Rp 193,000,000</p>
+          <span class="text-[11px] text-emerald-600 font-semibold block mt-1">40% Share Across 120 Residential Clusters</span>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">PUPR Rapid Response Reserve</span>
+          <p id="metric-pupr-reserve" class="text-2xl font-black text-slate-900 font-mono mt-1">Rp 289,500,000</p>
+          <span class="text-[11px] text-slate-500 font-semibold block mt-1">60% Share for Primary Corridor Operations</span>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Emission & Noise Abatement</span>
+          <p class="text-2xl font-black text-indigo-600 font-mono mt-1">-16.8%</p>
+          <span class="text-[11px] text-indigo-600 font-semibold block mt-1">Air Quality Improvement in ERP Corridors</span>
+        </div>
+      </div>
+
+      <!-- ERP Simulator and Dynamic Chart -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Interactive Fiscal Policy Sliders -->
+        <div class="lg:col-span-6 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-5">
+          <div class="border-b border-slate-100 pb-3">
+            <h3 class="font-bold text-slate-900 text-base flex items-center justify-between">
+              <span>ERP Fiscal Policy & Pollution Simulator</span>
+              <span class="text-xs font-bold text-brand-600 bg-brand-50 px-2 py-0.5 rounded">Dynamic Policy Lab</span>
+            </h3>
+            <p class="text-xs text-slate-500 mt-1">
+              Addressing road wear and emissions: Heavy and high-frequency traffic pays externality surcharges to automatically capitalize infrastructure maintenance.
+            </p>
+          </div>
+
+          <div class="space-y-4">
+            <div>
+              <div class="flex justify-between items-center text-xs font-bold text-slate-700 mb-1">
+                <span>Heavy Vehicle Volume (Freight / Buses / Peak Traffic):</span>
+                <span id="label-slider-traffic" class="font-mono text-brand-600 text-sm">1,400 Vehicles/Day</span>
+              </div>
+              <input id="slider-traffic" type="range" min="300" max="3000" step="50" value="1400" oninput="calculateErpSimulation()" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-600">
+            </div>
+
+            <div>
+              <div class="flex justify-between items-center text-xs font-bold text-slate-700 mb-1">
+                <span>Integrated Externality Tariff (Emissions + Axle Load):</span>
+                <span id="label-slider-tariff" class="font-mono text-brand-600 text-sm">Rp 18,000 / Trip</span>
+              </div>
+              <input id="slider-tariff" type="range" min="5000" max="40000" step="1000" value="18000" oninput="calculateErpSimulation()" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-600">
+            </div>
+
+            <div>
+              <div class="flex justify-between items-center text-xs font-bold text-slate-700 mb-1">
+                <span>Devolution Allocation Ratio to 60-House Clusters:</span>
+                <span id="label-slider-split" class="font-mono text-emerald-600 text-sm">40% Community : 60% PUPR</span>
+              </div>
+              <input id="slider-split" type="range" min="20" max="60" step="5" value="40" oninput="calculateErpSimulation()" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600">
+            </div>
+          </div>
+
+          <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-1.5 text-xs">
+            <span class="font-bold text-slate-800 block">Policy-Driven Projected Daily Accrual:</span>
+            <div class="flex justify-between text-slate-600 font-mono">
+              <span>Daily Community Cluster Allocation:</span>
+              <strong id="sim-daily-cluster" class="text-emerald-600">+Rp 10,080,000 / Day</strong>
+            </div>
+            <div class="flex justify-between text-slate-600 font-mono">
+              <span>Daily PUPR Rapid Response Allocation:</span>
+              <strong id="sim-daily-pupr" class="text-slate-900">+Rp 15,120,000 / Day</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Telemetry & Distribution Chart -->
+        <div class="lg:col-span-6 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm flex flex-col justify-between">
+          <div>
+            <h3 class="font-bold text-slate-900 text-base mb-1">Road Maintenance Fund Allocation Distribution</h3>
+            <p class="text-xs text-slate-500 mb-4">Comparison of centralized PUPR budget vs devolved 60-house cluster transfers.</p>
+            <div class="h-56 relative">
+              <canvas id="chart-erp-distribution"></canvas>
+            </div>
+          </div>
+          <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+            <span>e-Gov Regulatory Compliance: Public Procurement & Road Infrastructure Acts</span>
+            <span class="text-emerald-600 font-semibold">Automatically Verified</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Master Incident & Triage Table -->
+      <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+        <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h3 class="font-bold text-slate-900 text-base">Integrated Road Incident & Infrastructure Console (PUPR & Clusters)</h3>
+            <p class="text-xs text-slate-500">Live cross-jurisdictional ticket feed detailing funding sources, contractors, and resolution status.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="filterAdminTable('all')" class="admin-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-white">All</button>
+            <button onclick="filterAdminTable('arterial')" class="admin-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200">Arterial (PUPR)</button>
+            <button onclick="filterAdminTable('cluster')" class="admin-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200">60-House Clusters</button>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-50 text-slate-500 font-bold border-b border-slate-100">
+              <tr>
+                <th class="py-3.5 px-4">Ticket ID</th>
+                <th class="py-3.5 px-4">Location & Road Class</th>
+                <th class="py-3.5 px-4">Severity</th>
+                <th class="py-3.5 px-4">Funding Source</th>
+                <th class="py-3.5 px-4">Responsible Entity</th>
+                <th class="py-3.5 px-4">Status & Quorum</th>
+                <th class="py-3.5 px-4 text-right">Audit Action</th>
+              </tr>
+            </thead>
+            <tbody id="admin-tickets-table-body" class="divide-y divide-slate-100 font-medium">
+              <!-- Dynamically Rendered -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="toast" class="fixed bottom-5 right-5 z-50 transform transition-all duration-300 translate-y-20 opacity-0 pointer-events-none">
+    <div id="toast-content" class="bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 border border-slate-800 text-xs">
+      <i id="toast-icon" class="ph-bold ph-check-circle text-emerald-400 text-lg"></i>
+      <span id="toast-message">Notification</span>
+    </div>
+  </div>
+
+  <!-- Detail/Audit Modal -->
+  <div id="audit-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 border border-slate-100">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div>
+          <h4 id="modal-ticket-id" class="font-bold text-slate-900 text-base">#PW-2026-102</h4>
+          <p id="modal-ticket-road" class="text-xs text-slate-500">Jl. Gatot Subroto KM 4.2</p>
+        </div>
+        <button onclick="closeAuditModal()" class="h-8 w-8 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500">
+          <i class="ph-bold ph-x"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div class="grid grid-cols-2 gap-3 p-3 bg-slate-50 rounded-xl">
+          <div>
+            <span class="text-slate-400 block font-bold">Budget Source:</span>
+            <span id="modal-ticket-funding" class="font-semibold text-slate-800">ERP Dedicated Reserve</span>
+          </div>
+          <div>
+            <span class="text-slate-400 block font-bold">Estimated Cost:</span>
+            <span id="modal-ticket-cost" class="font-semibold text-slate-800 font-mono">Rp 4,200,000</span>
+          </div>
+        </div>
+
+        <div>
+          <span class="text-slate-400 block font-bold mb-1">Visual Verification (Before vs After):</span>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="border border-slate-200 rounded-xl p-3 bg-slate-50 text-center">
+              <span class="text-[10px] font-bold text-slate-400 block mb-1">INITIAL PHOTO (BEFORE)</span>
+              <div id="modal-before-box" class="h-28 bg-slate-200 rounded-lg overflow-hidden flex items-center justify-center text-slate-400 text-xs">
+                📸 Pothole Detected
+              </div>
+              <span class="text-[10px] text-slate-500 mt-1 block">Geo-Verified Lock</span>
+            </div>
+            <div class="border border-slate-200 rounded-xl p-3 bg-slate-50 text-center">
+              <span class="text-[10px] font-bold text-slate-400 block mb-1">REPAIR PHOTO (AFTER)</span>
+              <div id="modal-after-box" class="h-28 bg-emerald-50 border border-emerald-200 rounded-lg overflow-hidden flex items-center justify-center text-emerald-700 text-xs font-semibold">
+                ✅ Smooth Asphalt Validated
+              </div>
+              <span id="modal-after-status" class="text-[10px] text-emerald-600 mt-1 block">Field Tested</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t border-slate-100 flex justify-end gap-2">
+        <button onclick="closeAuditModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Embedded 100% offline-resilient high-fidelity vector graphics for realistic road audit inspection
+    const ASSET_LIBRARY = {
+      // 1. Moderate pothole in residential street (Kenanga RT 03)
+      potholeResidential: `data:image/svg+xml;utf8,${encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 350" width="100%" height="100%">
+          <defs>
+            <radialGradient id="holeDepth" cx="48%" cy="46%" r="52%">
+              <stop offset="0%" stop-color="#09090b"/>
+              <stop offset="45%" stop-color="#18181b"/>
+              <stop offset="75%" stop-color="#27272a"/>
+              <stop offset="100%" stop-color="#3f3f46"/>
+            </radialGradient>
+            <filter id="noiseFilter">
+              <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" result="noise"/>
+              <feColorMatrix type="matrix" values="0.33 0 0 0 0.2  0 0.33 0 0 0.2  0 0 0.33 0 0.2  0 0 0 0.15 0"/>
+              <feBlend mode="multiply" in="SourceGraphic" in2="noise"/>
+            </filter>
+          </defs>
+          <!-- Asphalt Road Base Texture -->
+          <rect width="600" height="350" fill="#334155"/>
+          <rect width="600" height="350" fill="#1e293b" opacity="0.45" filter="url(#noiseFilter)"/>
+          <!-- Road curb / side lane line -->
+          <line x1="0" y1="40" x2="600" y2="40" stroke="#facc15" stroke-width="6" stroke-dasharray="35,25" opacity="0.6"/>
+          
+          <!-- Outer asphalt fracture & alligator cracks -->
+          <path d="M 170,110 L 220,135 L 260,115 L 320,140 L 370,120 L 430,150 L 470,190 L 450,240 L 400,265 L 340,250 L 270,270 L 210,250 L 160,210 L 150,160 Z" fill="#27272a" stroke="#18181b" stroke-width="4"/>
+          <path d="M 220,135 L 205,95 M 320,140 L 340,90 M 430,150 L 485,130 M 400,265 L 430,310 M 270,270 L 260,320 M 160,210 L 105,230 M 150,160 L 95,140" stroke="#0f172a" stroke-width="2.5"/>
+
+          <!-- Deep Pothole Cavity with water sediment -->
+          <path d="M 210,140 C 270,110 370,125 410,165 C 445,200 425,245 385,255 C 335,268 250,265 200,235 C 165,205 175,160 210,140 Z" fill="url(#holeDepth)"/>
+          
+          <!-- Exposed sub-base gravel aggregate -->
+          <circle cx="270" cy="190" r="14" fill="#52525b"/>
+          <circle cx="310" cy="210" r="18" fill="#71717a"/>
+          <circle cx="355" cy="180" r="12" fill="#52525b"/>
+          <circle cx="240" cy="215" r="9" fill="#3f3f46"/>
+          <circle cx="380" cy="225" r="11" fill="#71717a"/>
+          <ellipse cx="295" cy="180" rx="45" ry="20" fill="#0284c7" opacity="0.35"/>
+          
+          <!-- Water puddle reflection in pothole center -->
+          <path d="M 260,185 Q 310,170 340,190 Q 320,205 270,198 Z" fill="#38bdf8" opacity="0.4"/>
+
+          <!-- SPBE Geotag Stamp Banner -->
+          <rect x="15" y="295" width="570" height="42" rx="6" fill="#020617" opacity="0.92"/>
+          <text x="30" y="315" fill="#34d399" font-family="monospace" font-size="12" font-weight="bold">📍 GEOTAG: -6.229352, 106.816741 | ELEV: 14.2m</text>
+          <text x="30" y="329" fill="#94a3b8" font-family="monospace" font-size="10">JL. KENANGA RT 03 #14 • SEVERITY: MODERATE (DEPTH: 5.8cm)</text>
+          <text x="470" y="322" fill="#fbbf24" font-family="monospace" font-size="11" font-weight="bold">⚠️ VERIFIED</text>
+        </svg>
+      `)}`,
+
+      // 2. Critical deep pothole & arterial subsidence (Jl. Gatot Subroto)
+      potholeArterial: `data:image/svg+xml;utf8,${encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 350" width="100%" height="100%">
+          <defs>
+            <radialGradient id="deepDepression" cx="50%" cy="50%" r="55%">
+              <stop offset="0%" stop-color="#020617"/>
+              <stop offset="35%" stop-color="#09090b"/>
+              <stop offset="70%" stop-color="#18181b"/>
+              <stop offset="100%" stop-color="#27272a"/>
+            </radialGradient>
+          </defs>
+          <!-- Highway Asphalt Surface -->
+          <rect width="600" height="350" fill="#1e293b"/>
+          <!-- Arterial Solid White Highway Line with Tire Skids -->
+          <rect x="0" y="45" width="600" height="12" fill="#ffffff" opacity="0.85"/>
+          <line x1="80" y1="120" x2="520" y2="135" stroke="#020617" stroke-width="16" opacity="0.35"/>
+          <line x1="100" y1="145" x2="540" y2="160" stroke="#020617" stroke-width="12" opacity="0.3"/>
+
+          <!-- Massive Structural Pavement Failure -->
+          <polygon points="120,110 200,90 320,80 430,105 510,140 480,240 420,280 290,290 180,270 110,210" fill="#0f172a" stroke="#000000" stroke-width="5"/>
+          <!-- Severe Stress Cracks expanding from heavy trucks -->
+          <path d="M 200,90 L 170,30 M 320,80 L 330,10 M 430,105 L 530,60 M 510,140 L 590,160 M 480,240 L 560,290 M 420,280 L 450,340 M 180,270 L 130,330 M 110,210 L 30,230" stroke="#020617" stroke-width="3.5"/>
+
+          <!-- Subsidence crater depth (>9cm) -->
+          <ellipse cx="315" cy="185" rx="155" ry="75" fill="url(#deepDepression)"/>
+          
+          <!-- Shattered asphalt chunks & broken foundation stone -->
+          <polygon points="210,165 235,150 250,175 220,185" fill="#3f3f46"/>
+          <polygon points="340,145 375,135 390,160 355,170" fill="#52525b"/>
+          <polygon points="270,215 310,200 325,230 285,240" fill="#3f3f46"/>
+          <polygon points="390,205 425,190 445,220 405,235" fill="#52525b"/>
+          
+          <!-- Warning Marker Overlay -->
+          <rect x="15" y="295" width="570" height="42" rx="6" fill="#020617" opacity="0.95"/>
+          <text x="30" y="315" fill="#f87171" font-family="monospace" font-size="12" font-weight="bold">🚨 CRITICAL SUBSIDENCE: JL. GATOT SUBROTO KM 4.2</text>
+          <text x="30" y="329" fill="#94a3b8" font-family="monospace" font-size="10">DEPTH &gt; 9.4CM • AXLE IMPACT DAMAGE • PUPR URC DISPATCH REQUIRED</text>
+          <text x="460" y="322" fill="#ef4444" font-family="monospace" font-size="11" font-weight="bold">ERP CORRIDOR</text>
+        </svg>
+      `)}`,
+
+      // 3. Crocodile cracking / interlocking wear in East Kenanga Lane
+      crocodileCracking: `data:image/svg+xml;utf8,${encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 350" width="100%" height="100%">
+          <rect width="600" height="350" fill="#475569"/>
+          <!-- Complex interlocking crocodile web network -->
+          <g stroke="#0f172a" stroke-width="3" fill="#334155" opacity="0.9">
+            <polygon points="120,80 170,70 190,110 140,120"/>
+            <polygon points="170,70 230,65 245,100 190,110"/>
+            <polygon points="230,65 295,75 290,115 245,100"/>
+            <polygon points="295,75 360,60 375,105 290,115"/>
+            <polygon points="360,60 430,70 425,115 375,105"/>
+            
+            <polygon points="140,120 190,110 205,160 155,170"/>
+            <polygon points="190,110 245,100 260,155 205,160"/>
+            <polygon points="245,100 290,115 305,165 260,155"/>
+            <polygon points="290,115 375,105 385,160 305,165"/>
+            <polygon points="375,105 425,115 440,170 385,160"/>
+
+            <polygon points="155,170 205,160 215,220 160,230"/>
+            <polygon points="205,160 260,155 270,215 215,220"/>
+            <polygon points="260,155 305,165 315,225 270,215"/>
+            <polygon points="305,165 385,160 395,220 315,225"/>
+            <polygon points="385,160 440,170 450,230 395,220"/>
+
+            <polygon points="160,230 215,220 220,275 170,285"/>
+            <polygon points="215,220 270,215 280,270 220,275"/>
+            <polygon points="270,215 315,225 325,280 280,270"/>
+            <polygon points="315,225 395,220 390,275 325,280"/>
+          </g>
+          <!-- Surface peeling and gravel loss -->
+          <circle cx="230" cy="130" r="12" fill="#1e293b"/>
+          <circle cx="280" cy="180" r="16" fill="#1e293b"/>
+          <circle cx="340" cy="140" r="14" fill="#1e293b"/>
+
+          <rect x="15" y="295" width="570" height="42" rx="6" fill="#020617" opacity="0.92"/>
+          <text x="30" y="315" fill="#38bdf8" font-family="monospace" font-size="12" font-weight="bold">📍 GEOTAG: EAST KENANGA LANE NO. 4</text>
+          <text x="30" y="329" fill="#94a3b8" font-family="monospace" font-size="10">DEFECT: ALLIGATOR CRACKING / INTERLOCKING SURFACE FATIGUE</text>
+          <text x="475" y="322" fill="#38bdf8" font-family="monospace" font-size="11" font-weight="bold">RT 03 CLUSTER</text>
+        </svg>
+      `)}`,
+
+      // 4. Smooth freshly compacted hot-mix asphalt (Repaired "After" status)
+      repairedAsphalt: `data:image/svg+xml;utf8,${encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 350" width="100%" height="100%">
+          <defs>
+            <linearGradient id="smoothAsphalt" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#18181b"/>
+              <stop offset="50%" stop-color="#27272a"/>
+              <stop offset="100%" stop-color="#18181b"/>
+            </linearGradient>
+            <linearGradient id="tackSeal" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#09090b" stop-opacity="0.8"/>
+              <stop offset="100%" stop-color="#27272a" stop-opacity="0.2"/>
+            </linearGradient>
+          </defs>
+          <!-- Fresh Hot-Mix Asphalt Bed -->
+          <rect width="600" height="350" fill="url(#smoothAsphalt)"/>
+          
+          <!-- Compactor roller compression tracks -->
+          <rect x="80" y="0" width="140" height="350" fill="#09090b" opacity="0.25"/>
+          <rect x="250" y="0" width="140" height="350" fill="#09090b" opacity="0.25"/>
+          <rect x="420" y="0" width="140" height="350" fill="#09090b" opacity="0.25"/>
+
+          <!-- High-quality Bituminous Tack Coat Edge Sealing Strip -->
+          <rect x="60" y="55" width="480" height="230" rx="14" fill="#18181b" stroke="#09090b" stroke-width="4"/>
+          <rect x="75" y="70" width="450" height="200" rx="10" fill="#27272a" stroke="#3f3f46" stroke-width="1.5" stroke-dasharray="6,4"/>
+
+          <!-- Repainted Crisp Thermoplastic Marking -->
+          <line x1="20" y1="35" x2="580" y2="35" stroke="#facc15" stroke-width="7" opacity="0.95"/>
+          <line x1="20" y1="35" x2="580" y2="35" stroke="#ffffff" stroke-width="2" stroke-dasharray="20,15" opacity="0.7"/>
+
+          <!-- Quality Certification Stamp Badge -->
+          <g transform="translate(420, 95)">
+            <circle cx="50" cy="50" r="42" fill="#047857" opacity="0.9"/>
+            <circle cx="50" cy="50" r="37" fill="none" stroke="#6ee7b7" stroke-width="2" stroke-dasharray="4,2"/>
+            <text x="50" y="44" fill="#ffffff" font-family="sans-serif" font-size="11" font-weight="900" text-anchor="middle">SPBE AUDIT</text>
+            <text x="50" y="58" fill="#a7f3d0" font-family="sans-serif" font-size="9" font-weight="bold" text-anchor="middle">PASSED</text>
+            <text x="50" y="70" fill="#ffffff" font-family="sans-serif" font-size="8" text-anchor="middle">100% SMOOTH</text>
+          </g>
+
+          <!-- Audit Verified Footer Banner -->
+          <rect x="15" y="295" width="570" height="42" rx="6" fill="#020617" opacity="0.95"/>
+          <text x="30" y="315" fill="#34d399" font-family="monospace" font-size="12" font-weight="bold">✅ POST-REPAIR AUDIT: COMPACTED HOT-MIX ASPHALT</text>
+          <text x="30" y="329" fill="#94a3b8" font-family="monospace" font-size="10">CONTRACTOR: CV MANDIRI JAYA • WARRANTY: 12 MONTHS • ESCROW DISBURSED</text>
+          <text x="490" y="322" fill="#34d399" font-family="monospace" font-size="11" font-weight="bold">VALIDATED</text>
+        </svg>
+      `)}`
+    };
+
+    // State management in English
+    const state = {
+      clusterBalance: 14250000,
+      totalErpRevenue: 482500000,
+      trafficVolume: 1400,
+      erpRate: 18000,
+      clusterSplit: 0.40,
+      currentFilter: 'all',
+      currentUploadedPhotoData: null,
+      tickets: [
+        {
+          id: "PW-2026-101",
+          road: "Jl. Kenanga RT 03 No. 14",
+          type: "cluster",
+          severity: "Moderate",
+          landmark: "Next to Nurul Huda Mosque",
+          description: "Asphalt layer peeled along 1.5 meters, posing a severe hazard for two-wheelers during heavy rainfall.",
+          funding: "Devolved ERP Micro-Treasury (60-House Cluster)",
+          assignedTo: "CV Mandiri Jaya (Approved Local Contractor)",
+          status: "Awaiting Citizen Quorum",
+          votes: 27,
+          requiredVotes: 31,
+          cost: 1650000,
+          votedByUser: false,
+          beforePhoto: ASSET_LIBRARY.potholeResidential,
+          afterPhotoReady: false,
+          createdDate: "07 Oct 2026, 09:15"
+        },
+        {
+          id: "PW-2026-088",
+          road: "Jl. Gatot Subroto KM 4.2",
+          type: "arterial",
+          severity: "Critical",
+          landmark: "Express Lane in front of Mandiri Tower",
+          description: "Subsidence depth exceeds 9cm caused by heavy freight traffic during monsoon showers.",
+          funding: "PUPR Department Dedicated ERP Reserve",
+          assignedTo: "PUPR Rapid Response Unit (URC)",
+          status: "In Progress (URC Dispatched)",
+          votes: 0,
+          requiredVotes: 0,
+          cost: 5800000,
+          votedByUser: false,
+          beforePhoto: ASSET_LIBRARY.potholeArterial,
+          afterPhotoReady: false,
+          createdDate: "07 Oct 2026, 07:30"
+        },
+        {
+          id: "PW-2026-074",
+          road: "East Kenanga Lane No. 4",
+          type: "cluster",
+          severity: "Minor",
+          landmark: "In front of RT 03 Leader Residence",
+          description: "Alligator cracking along the interlocking paving road segment.",
+          funding: "Devolved ERP Micro-Treasury (60-House Cluster)",
+          assignedTo: "Kenanga Community Works Co-Op",
+          status: "Completed & Validated",
+          votes: 36,
+          requiredVotes: 31,
+          cost: 850000,
+          votedByUser: true,
+          beforePhoto: ASSET_LIBRARY.crocodileCracking,
+          afterPhoto: ASSET_LIBRARY.repairedAsphalt,
+          afterPhotoReady: true,
+          createdDate: "05 Oct 2026, 14:10"
+        }
+      ]
+    };
+
+    let erpChartInstance = null;
+
+    function triggerPhotoInput() {
+      const fileInput = document.getElementById('input-photo-file');
+      if (fileInput) fileInput.click();
+    }
+
+    function handlePhotoUpload(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      processSelectedImageFile(file);
+    }
+
+    function handlePhotoDragOver(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      const dropzone = document.getElementById('photo-dropzone');
+      dropzone.classList.add('border-brand-600', 'bg-brand-100/50');
+    }
+
+    function handlePhotoDragLeave(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      const dropzone = document.getElementById('photo-dropzone');
+      dropzone.classList.remove('border-brand-600', 'bg-brand-100/50');
+    }
+
+    function handlePhotoDrop(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      const dropzone = document.getElementById('photo-dropzone');
+      dropzone.classList.remove('border-brand-600', 'bg-brand-100/50');
+
+      if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length > 0) {
+        processSelectedImageFile(event.dataTransfer.files[0]);
+      }
+    }
+
+    function processSelectedImageFile(file) {
+      if (!file.type.startsWith('image/')) {
+        showToast('Please upload a valid image file (JPEG, PNG, etc.)', 'warning');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        displayUploadedPhoto(e.target.result);
+        showToast('Photo evidence captured with live geotag watermark!');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function loadDemoPresetPhoto(event) {
+      if (event) event.stopPropagation();
+      displayUploadedPhoto(ASSET_LIBRARY.potholeResidential);
+      showToast('Sample geotagged road hazard loaded for demonstration.');
+    }
+
+    function displayUploadedPhoto(dataUrl) {
+      state.currentUploadedPhotoData = dataUrl;
+      const previewImg = document.getElementById('photo-preview-img');
+      const placeholderUi = document.getElementById('photo-placeholder-ui');
+      const previewUi = document.getElementById('photo-preview-ui');
+      const badge = document.getElementById('photo-status-badge');
+      const timestampSpan = document.getElementById('preview-timestamp');
+
+      if (previewImg) previewImg.src = dataUrl;
+      if (placeholderUi) placeholderUi.classList.add('hidden');
+      if (previewUi) previewUi.classList.remove('hidden');
+
+      if (badge) {
+        badge.className = "text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-300";
+        badge.innerHTML = "✓ Geotag Locked";
+      }
+
+      const now = new Date();
+      if (timestampSpan) {
+        timestampSpan.innerText = now.toLocaleString('en-US', {
+          month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit'
+        });
+      }
+    }
+
+    function resetUploadedPhoto(event) {
+      if (event) event.stopPropagation();
+      state.currentUploadedPhotoData = null;
+
+      const fileInput = document.getElementById('input-photo-file');
+      if (fileInput) fileInput.value = '';
+
+      const placeholderUi = document.getElementById('photo-placeholder-ui');
+      const previewUi = document.getElementById('photo-preview-ui');
+      const badge = document.getElementById('photo-status-badge');
+
+      if (placeholderUi) placeholderUi.classList.remove('hidden');
+      if (previewUi) previewUi.classList.add('hidden');
+
+      if (badge) {
+        badge.className = "text-[10px] text-amber-600 font-bold bg-amber-50 px-2 py-0.5 rounded border border-amber-200";
+        badge.innerText = "Photo Required";
+      }
+    }
+
+    // View Navigation Logic
+    function navigateTo(viewName) {
+      document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+      document.querySelectorAll('.nav-tab').forEach(b => {
+        b.classList.remove('bg-brand-600', 'text-white', 'shadow-sm');
+        b.classList.add('text-slate-300');
+      });
+
+      const activeView = document.getElementById(`view-${viewName}`);
+      const activeBtn = document.getElementById(`nav-${viewName}`);
+
+      if (activeView) activeView.classList.remove('hidden');
+      if (activeBtn) {
+        activeBtn.classList.remove('text-slate-300');
+        activeBtn.classList.add('bg-brand-600', 'text-white', 'shadow-sm');
+      }
+
+      if (viewName === 'admin' && !erpChartInstance) {
+        initErpChart();
+      }
+      renderAll();
+    }
+
+    // Dynamic Road Classification preview in Citizen View
+    function handleRoadSegmentChange() {
+      const segment = document.getElementById('input-road-segment').value;
+      const banner = document.getElementById('triage-prediction-banner');
+
+      if (segment === 'arterial') {
+        banner.className = "p-3.5 rounded-xl border transition-all text-xs flex items-start gap-3 bg-amber-50 border-amber-200 text-amber-900";
+        banner.innerHTML = `
+          <i class="ph-fill ph-warning-circle text-amber-600 text-lg shrink-0 mt-0.5"></i>
+          <div>
+            <span class="font-bold block">Automated Triage: Primary Arterial Road Jurisdiction (PUPR)</span>
+            <span class="text-amber-800">This corridor is funded directly from primary ERP externality levies. Routed to the <strong>Rapid Response Unit (URC) queue</strong> without deducting community cluster funds.</span>
+          </div>
+        `;
+      } else {
+        banner.className = "p-3.5 rounded-xl border transition-all text-xs flex items-start gap-3 bg-emerald-50 border-emerald-200 text-emerald-900";
+        banner.innerHTML = `
+          <i class="ph-fill ph-check-circle text-emerald-600 text-lg shrink-0 mt-0.5"></i>
+          <div>
+            <span class="font-bold block">Automated Triage: 60-House Cluster Jurisdiction</span>
+            <span class="text-emerald-800">Report routed directly to the neighborhood digital quorum dashboard. Funded by the <strong>Devolved ERP Micro-Treasury</strong> without municipal bureaucratic bottlenecks.</span>
+          </div>
+        `;
+      }
+    }
+
+    function submitReportForm() {
+      const segmentType = document.getElementById('input-road-segment').value;
+      const severity = document.getElementById('input-severity').value;
+      const landmark = document.getElementById('input-landmark').value.trim() || "Near local landmark";
+      const desc = document.getElementById('input-description').value.trim();
+
+      if (!desc) {
+        showToast("Please enter a description of the road damage first.", "warning");
+        return;
+      }
+
+      // Default photo fallback based on road classification
+      const photoToUse = state.currentUploadedPhotoData || (segmentType === 'arterial' ? ASSET_LIBRARY.potholeArterial : ASSET_LIBRARY.potholeResidential);
+
+      const randomNum = Math.floor(100 + Math.random() * 900);
+      const newTicketId = `#PW-2026-${randomNum}`;
+      const isArterial = segmentType === 'arterial';
+
+      const newTicket = {
+        id: newTicketId,
+        road: isArterial ? "Jl. Gatot Subroto KM 4.2" : (segmentType === 'residential' ? "Jl. Kenanga RT 03 / No. 14" : "East Kenanga Lane"),
+        type: isArterial ? "arterial" : "cluster",
+        severity: severity,
+        landmark: landmark,
+        description: desc,
+        funding: isArterial ? "PUPR Department Dedicated ERP Reserve" : "Devolved ERP Micro-Treasury (60-House Cluster)",
+        assignedTo: isArterial ? "PUPR Rapid Response Unit (URC)" : "CV Mandiri Jaya (Approved Local Contractor)",
+        status: isArterial ? "Scheduled for URC Dispatch" : "Awaiting Citizen Quorum",
+        votes: isArterial ? 0 : 1,
+        requiredVotes: isArterial ? 0 : 31,
+        cost: isArterial ? 4500000 : (severity === 'Critical' ? 2400000 : 1500000),
+        votedByUser: !isArterial,
+        beforePhoto: photoToUse,
+        afterPhotoReady: false,
+        createdDate: "07 Oct 2026, 17:15"
+      };
+
+      state.tickets.unshift(newTicket);
+      document.getElementById('input-description').value = '';
+      document.getElementById('input-landmark').value = '';
+      resetUploadedPhoto();
+
+      showToast(`Report ${newTicketId} successfully registered with geotag evidence!`);
+      renderAll();
+    }
+
+    // Voting action in Cluster view
+    function castClusterVote(ticketId) {
+      const ticket = state.tickets.find(t => t.id === ticketId);
+      if (!ticket || ticket.votedByUser) return;
+
+      ticket.votes += 1;
+      ticket.votedByUser = true;
+
+      if (ticket.votes >= ticket.requiredVotes) {
+        ticket.status = "Quorum Reached (Funds Escrowed)";
+        state.clusterBalance -= ticket.cost;
+        showToast(`Quorum for ${ticket.id} reached (31/60 Households)! Rp ${ticket.cost.toLocaleString('en-US')} escrow locked for contractor.`);
+      } else {
+        showToast(`Your vote has been recorded for ${ticket.id}. Current tally: ${ticket.votes}/31.`);
+      }
+
+      renderAll();
+    }
+
+    // Completion / Vendor proof submission
+    function markAsCompletedByCluster(ticketId) {
+      const ticket = state.tickets.find(t => t.id === ticketId);
+      if (!ticket) return;
+
+      ticket.status = "Completed & Validated";
+      ticket.afterPhoto = ASSET_LIBRARY.repairedAsphalt;
+      ticket.afterPhotoReady = true;
+
+      showToast(`Repair ${ticket.id} validated by residents! Audit certificate issued.`);
+      renderAll();
+    }
+
+    // PUPR Dispatch Action
+    function dispatchPuprAction(ticketId) {
+      const ticket = state.tickets.find(t => t.id === ticketId);
+      if (!ticket) return;
+
+      if (ticket.status.includes('Scheduled')) {
+        ticket.status = "In Progress (URC Dispatched)";
+        showToast(`PUPR Rapid Response Unit dispatched to ${ticket.road}.`);
+      } else {
+        ticket.status = "Completed & Validated";
+        ticket.afterPhoto = ASSET_LIBRARY.repairedAsphalt;
+        ticket.afterPhotoReady = true;
+        showToast(`Arterial repair ${ticket.id} completed & proof uploaded.`);
+      }
+      renderAll();
+    }
+
+    function openAuditModal(ticketId) {
+      const ticket = state.tickets.find(t => t.id === ticketId);
+      if (!ticket) return;
+
+      document.getElementById('modal-ticket-id').innerText = ticket.id;
+      document.getElementById('modal-ticket-road').innerText = ticket.road;
+      document.getElementById('modal-ticket-funding').innerText = ticket.funding;
+      document.getElementById('modal-ticket-cost').innerText = `Rp ${ticket.cost.toLocaleString('en-US')}`;
+
+      // Render Before Photo with embedded fail-safe SVG guarantee
+      const beforeBox = document.getElementById('modal-before-box');
+      const photoSrc = ticket.beforePhoto || ASSET_LIBRARY.potholeResidential;
+      beforeBox.innerHTML = `
+        <img 
+          src="${photoSrc}" 
+          alt="Damage Initial" 
+          class="w-full h-full object-cover rounded-lg"
+        />
+      `;
+
+      const afterBox = document.getElementById('modal-after-box');
+      const afterStatus = document.getElementById('modal-after-status');
+
+      if (ticket.status === 'Completed & Validated') {
+        afterBox.className = "h-28 bg-emerald-50 border border-emerald-200 rounded-lg overflow-hidden flex items-center justify-center text-emerald-700 text-xs font-semibold";
+        const afterSrc = ticket.afterPhoto || ASSET_LIBRARY.repairedAsphalt;
+        afterBox.innerHTML = `
+          <img 
+            src="${afterSrc}" 
+            alt="Completed Asphalt" 
+            class="w-full h-full object-cover rounded-lg"
+          />
+        `;
+        afterStatus.innerText = "Community Audit Completed";
+      } else {
+        afterBox.className = "h-28 bg-amber-50 border border-amber-200 rounded-lg flex items-center justify-center text-amber-700 text-xs font-semibold";
+        afterBox.innerHTML = "⏳ Awaiting Field Execution";
+        afterStatus.innerText = "Work In Progress";
+      }
+
+      document.getElementById('audit-modal').classList.remove('hidden');
+    }
+
+    function closeAuditModal() {
+      document.getElementById('audit-modal').classList.add('hidden');
+    }
+
+    function searchTicketAction() {
+      const query = document.getElementById('input-search-ticket').value.trim().toUpperCase();
+      if (!query) return;
+
+      const found = state.tickets.find(t => t.id.toUpperCase().includes(query));
+      if (found) {
+        openAuditModal(found.id);
+      } else {
+        showToast("Ticket ID not found in geospatial database.", "warning");
+      }
+    }
+
+    // ERP Policy Slider Calculation
+    function calculateErpSimulation() {
+      const traffic = parseInt(document.getElementById('slider-traffic').value);
+      const tariff = parseInt(document.getElementById('slider-tariff').value);
+      const splitPercent = parseInt(document.getElementById('slider-split').value) / 100;
+
+      document.getElementById('label-slider-traffic').innerText = `${traffic.toLocaleString('en-US')} Vehicles/Day`;
+      document.getElementById('label-slider-tariff').innerText = `Rp ${tariff.toLocaleString('en-US')} / Trip`;
+      document.getElementById('label-slider-split').innerText = `${Math.round(splitPercent * 100)}% Community : ${Math.round((1 - splitPercent) * 100)}% PUPR`;
+
+      const dailyRevenue = traffic * tariff;
+      const dailyCluster = dailyRevenue * splitPercent;
+      const dailyPupr = dailyRevenue * (1 - splitPercent);
+
+      document.getElementById('sim-daily-cluster').innerText = `+Rp ${Math.round(dailyCluster).toLocaleString('en-US')} / Day`;
+      document.getElementById('sim-daily-pupr').innerText = `+Rp ${Math.round(dailyPupr).toLocaleString('en-US')} / Day`;
+
+      // Update Chart if present
+      if (erpChartInstance) {
+        erpChartInstance.data.datasets[0].data = [Math.round(splitPercent * 100), Math.round((1 - splitPercent) * 100)];
+        erpChartInstance.update();
+      }
+    }
+
+    // Initialize Chart.js for ERP
+    function initErpChart() {
+      const ctx = document.getElementById('chart-erp-distribution');
+      if (!ctx) return;
+
+      erpChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Devolved 60-House Cluster Micro-Treasuries', 'PUPR Arterial Rapid Response Reserve'],
+          datasets: [{
+            data: [40, 60],
+            backgroundColor: ['#10b981', '#1e3a8a'],
+            borderWidth: 0,
+            hoverOffset: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                boxWidth: 12,
+                font: { size: 11, family: "'Plus Jakarta Sans', sans-serif" }
+              }
+            }
+          },
+          cutout: '70%'
+        }
+      });
+    }
+
+    // Filter Admin Table
+    function filterAdminTable(filter) {
+      state.currentFilter = filter;
+      document.querySelectorAll('.admin-filter-btn').forEach(btn => {
+        btn.classList.remove('bg-slate-900', 'text-white');
+        btn.classList.add('bg-slate-100', 'text-slate-700');
+      });
+      event.target.classList.remove('bg-slate-100', 'text-slate-700');
+      event.target.classList.add('bg-slate-900', 'text-white');
+      renderAdminTable();
+    }
+
+    // Toast feedback helper
+    function showToast(msg, type = "success") {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-message');
+      const toastIcon = document.getElementById('toast-icon');
+
+      toastMsg.innerText = msg;
+      if (type === 'warning') {
+        toastIcon.className = "ph-bold ph-warning-circle text-amber-400 text-lg";
+      } else {
+        toastIcon.className = "ph-bold ph-check-circle text-emerald-400 text-lg";
+      }
+
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3500);
+    }
+
+    function renderCitizenFeed() {
+      const container = document.getElementById('citizen-tickets-feed');
+      if (!container) return;
+
+      container.innerHTML = state.tickets.slice(0, 4).map(t => `
+        <div class="p-3 rounded-xl border border-slate-200/90 bg-slate-50/50 hover:bg-slate-50 transition cursor-pointer" onclick="openAuditModal('${t.id}')">
+          <div class="flex items-center justify-between gap-2 mb-1.5">
+            <span class="font-bold text-xs text-slate-900 font-mono">${t.id}</span>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${
+              t.status.includes('Completed') ? 'bg-emerald-100 text-emerald-800' :
+              (t.status.includes('Quorum') || t.status.includes('Progress') ? 'bg-indigo-100 text-indigo-800' : 'bg-amber-100 text-amber-800')
+            }">${t.status}</span>
+          </div>
+          <p class="text-xs font-semibold text-slate-800 truncate">${t.road}</p>
+          <div class="mt-2 flex items-center justify-between text-[11px] text-slate-500">
+            <span class="truncate">${t.funding}</span>
+            <span class="font-bold text-slate-700 font-mono">Rp ${t.cost.toLocaleString('en-US')}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderClusterView() {
+      const container = document.getElementById('cluster-cards-container');
+      if (!container) return;
+
+      const clusterTasks = state.tickets.filter(t => t.type === 'cluster');
+
+      // Update badge count
+      const pendingCount = clusterTasks.filter(t => t.status === "Awaiting Citizen Quorum").length;
+      document.getElementById('badge-cluster-count').innerText = pendingCount;
+      document.getElementById('stat-cluster-pending').innerText = `${pendingCount} Ticket`;
+      document.getElementById('stat-cluster-completed').innerText = `${clusterTasks.filter(t => t.status === "Completed & Validated").length} Sites`;
+      document.getElementById('stat-cluster-balance').innerText = `Rp ${state.clusterBalance.toLocaleString('en-US')}`;
+      document.getElementById('card-citizen-cluster-balance').innerText = `Rp ${state.clusterBalance.toLocaleString('en-US')}`;
+
+      container.innerHTML = clusterTasks.map(t => {
+        const percent = Math.min(100, Math.round((t.votes / t.requiredVotes) * 100));
+        const isQuorumReached = t.votes >= t.requiredVotes;
+
+        return `
+          <div class="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="font-mono text-xs font-bold text-brand-600 bg-brand-50 px-2 py-0.5 rounded">${t.id}</span>
+                  <h4 class="font-bold text-slate-900 text-sm sm:text-base">${t.road}</h4>
+                </div>
+                <p class="text-xs text-slate-500 mt-1">${t.description}</p>
+                <div class="mt-2 text-xs text-slate-600 flex items-center gap-4">
+                  <span><strong>Landmark:</strong> ${t.landmark}</span>
+                  <span><strong>Assigned Contractor:</strong> ${t.assignedTo}</span>
+                </div>
+              </div>
+              <div class="sm:text-right shrink-0">
+                <span class="text-xs text-slate-400 font-bold block">Estimated Vendor Cost:</span>
+                <span class="text-base font-extrabold text-slate-900 font-mono">Rp ${t.cost.toLocaleString('en-US')}</span>
+              </div>
+            </div>
+
+            <!-- Quorum Bar -->
+            <div class="p-3.5 bg-slate-50 rounded-xl space-y-2 border border-slate-100">
+              <div class="flex justify-between items-center text-xs font-semibold">
+                <span class="text-slate-700">Cluster Quorum Support: <strong>${t.votes} / ${t.requiredVotes} Households</strong></span>
+                <span class="${isQuorumReached ? 'text-emerald-600' : 'text-amber-600'} font-bold">${percent}%</span>
+              </div>
+              <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
+                <div class="h-full ${isQuorumReached ? 'bg-emerald-500' : 'bg-amber-500'} rounded-full transition-all duration-500" style="width: ${percent}%"></div>
+              </div>
+            </div>
+
+            <!-- Interaction Buttons -->
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+              <div class="flex items-center gap-2">
+                <button onclick="openAuditModal('${t.id}')" class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition">
+                  Inspect Photo Proof
+                </button>
+              </div>
+
+              <div class="flex items-center gap-2">
+                ${t.status === 'Awaiting Citizen Quorum' ? `
+                  <button onclick="castClusterVote('${t.id}')" ${t.votedByUser ? 'disabled' : ''} class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                    t.votedByUser 
+                      ? 'bg-slate-100 text-slate-400 cursor-not-allowed' 
+                      : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm'
+                  }">
+                    <i class="ph-bold ph-thumbs-up"></i>
+                    <span>${t.votedByUser ? 'Your Vote Has Been Recorded' : 'Cast Citizen Approval Vote'}</span>
+                  </button>
+                ` : ''}
+
+                ${t.status === 'Quorum Reached (Funds Escrowed)' ? `
+                  <button onclick="markAsCompletedByCluster('${t.id}')" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                    <i class="ph-bold ph-check-square-offset"></i>
+                    <span>Verify Completion & Release Vendor Escrow</span>
+                  </button>
+                ` : ''}
+
+                ${t.status === 'Completed & Validated' ? `
+                  <span class="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-lg">
+                    <i class="ph-bold ph-check-circle"></i> Completed & Payment Disbursed
+                  </span>
+                ` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderAdminTable() {
+      const tbody = document.getElementById('admin-tickets-table-body');
+      if (!tbody) return;
+
+      let filtered = state.tickets;
+      if (state.currentFilter !== 'all') {
+        filtered = state.tickets.filter(t => t.type === state.currentFilter);
+      }
+
+      tbody.innerHTML = filtered.map(t => `
+        <tr class="hover:bg-slate-50/70 transition">
+          <td class="py-3.5 px-4 font-mono font-bold text-slate-900">${t.id}</td>
+          <td class="py-3.5 px-4">
+            <span class="font-bold text-slate-800 block">${t.road}</span>
+            <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded ${
+              t.type === 'arterial' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
+            }">${t.type === 'arterial' ? 'Arterial (ERP)' : '60-House Cluster'}</span>
+          </td>
+          <td class="py-3.5 px-4">
+            <span class="font-bold ${t.severity === 'Critical' ? 'text-red-600' : 'text-slate-700'}">${t.severity}</span>
+          </td>
+          <td class="py-3.5 px-4 text-slate-600">${t.funding}</td>
+          <td class="py-3.5 px-4 text-slate-600">${t.assignedTo}</td>
+          <td class="py-3.5 px-4">
+            <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold ${
+              t.status.includes('Completed') ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-700'
+            }">${t.status}</span>
+            ${t.type === 'cluster' ? `<span class="block text-[10px] text-slate-400 mt-0.5">Quorum: ${t.votes}/31</span>` : ''}
+          </td>
+          <td class="py-3.5 px-4 text-right">
+            ${t.type === 'arterial' && t.status !== 'Completed & Validated' ? `
+              <button onclick="dispatchPuprAction('${t.id}')" class="px-2.5 py-1 bg-brand-600 text-white rounded text-[11px] font-bold hover:bg-brand-700 transition">
+                ${t.status.includes('Scheduled') ? 'Dispatch URC' : 'Complete'}
+              </button>
+            ` : `
+              <button onclick="openAuditModal('${t.id}')" class="px-2.5 py-1 bg-slate-100 text-slate-700 rounded text-[11px] font-bold hover:bg-slate-200 transition">
+                Audit
+              </button>
+            `}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderAll() {
+      renderCitizenFeed();
+      renderClusterView();
+      renderAdminTable();
+    }
+
+    // Window load init
+    window.onload = function() {
+      renderAll();
+      handleRoadSegmentChange();
+      calculateErpSimulation();
+    };
+  </script>
+</body>
+</html>
